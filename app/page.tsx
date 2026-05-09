@@ -28,12 +28,31 @@ export default function Home() {
   // CLEAN ROOM
   // =========================
   const cleanRoom = (text: any) => {
-    if (!text) return "";
+  if (!text) return "";
 
-    const room = String(text).match(/R\d+/i);
+  const value = String(text).toUpperCase();
 
-    return room ? room[0].toUpperCase() : "";
-  };
+  // Lấy Sitting
+  const sittingMatch = value.match(/SITTING\s*\d+/i);
+
+  // Lấy Room
+  const roomMatch = value.match(/R\d+/i);
+
+  const sitting = sittingMatch
+    ? sittingMatch[0]
+        .replace(/\s+/g, " ")
+        .trim()
+    : "";
+
+  const room = roomMatch
+    ? roomMatch[0].trim()
+    : "";
+
+  // Gộp kết quả
+  return `${sitting} - ${room}`
+    .replace(/\s+/g, " ")
+    .trim();
+};
 
   // =========================
   // CLEAN CCCD
@@ -184,19 +203,24 @@ export default function Home() {
       item.id.includes(search);
 
     const roomMatch =
-      roomFilter === "ALL" || item.room === roomFilter;
+  roomFilter === "ALL"
+    ? true
+    : roomFilter === "NO DATA"
+    ? item.status === "ABSENT / REJECTED"
+    : item.room === roomFilter;
 
     return keyword && roomMatch;
   });
 
   // ROOM LIST
   const roomList = [
-    ...new Set(
-      results
-        .map((item) => item.room)
-        .filter(Boolean)
-    ),
-  ];
+  "NO DATA",
+  ...new Set(
+    results
+      .map((item) => item.room)
+      .filter(Boolean)
+  ),
+];
 
   return (
     <div
